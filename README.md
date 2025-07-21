@@ -6,14 +6,15 @@ This represents my final project progress. Includes custom functions made to red
 
 # Table of Contents
 
-Section 1: Setup<br>
+**Section 1: Setup<br>**
 
   1.1 Imports and Settings<br>
   1.2 Read in and Preprocess Dataset<br>
   1.3 Create Dimension Reduced Dataframes with PCA and UMAP<br>
   1.4 Create Test-Training Test split<br>
 
-Section 2: Random Forest Model<br>
+**Section 2: Random Forest Model<br>**
+
   2.1 Create and Fit Models<br>
   2.2 RF Model Initial Test and Analysis<br>
   
