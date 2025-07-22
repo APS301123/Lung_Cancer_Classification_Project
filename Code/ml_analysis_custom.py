@@ -12,11 +12,13 @@ from sklearn.metrics import precision_recall_curve
 from sklearn.metrics import roc_auc_score
 from sklearn.metrics import roc_curve
 from sklearn.model_selection import learning_curve
+from sklearn.metrics import auc
 
 #imports for random forest
 from sklearn.ensemble import RandomForestClassifier
 
 #creates roc curve
+
 def create_ROC_curve(x_dimension, y_dimension, ml_model_names, ml_models, X_tests, y_tests, title, pos_label):
     false_positive_rates = [] 
     true_positive_rates = []
@@ -25,8 +27,8 @@ def create_ROC_curve(x_dimension, y_dimension, ml_model_names, ml_models, X_test
         #calculate RF model roc auc
         pos_index = list(model.classes_).index(pos_label)
         y_prob = model.predict_proba(X_test)[:, pos_index]
-        roc_auc = roc_auc_score(y_test, y_prob)
-        fpr, tpr, thresholds = roc_curve(y_test, y_prob, pos_label = 'Case')
+        fpr, tpr, thresholds = roc_curve(y_test, y_prob, pos_label = pos_label)
+        roc_auc = auc(fpr, tpr)
         false_positive_rates.append(fpr)
         true_positive_rates.append(tpr)
         roc_auc_scores.append(roc_auc)
@@ -34,7 +36,7 @@ def create_ROC_curve(x_dimension, y_dimension, ml_model_names, ml_models, X_test
     #set figure size
     plt.figure(figsize=(x_dimension, y_dimension))
 
-    #add random forest
+    #add models
     for model, fpr, tpr, rcs in zip(ml_model_names, false_positive_rates, true_positive_rates, roc_auc_scores):
         plt.plot(fpr, tpr, label = model + ' (area = %0.2f)' % rcs)
 
@@ -43,7 +45,6 @@ def create_ROC_curve(x_dimension, y_dimension, ml_model_names, ml_models, X_test
     plt.ylim([0.0, 1.05])
     plt.xlabel('False Positive Rate')
     plt.ylabel('True Positive Rate')
-    plt.title(title)
     plt.legend(loc="lower right")
     plt.show()
 
