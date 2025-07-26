@@ -13,6 +13,7 @@ from sklearn.metrics import roc_auc_score
 from sklearn.metrics import roc_curve
 from sklearn.model_selection import learning_curve
 from sklearn.metrics import auc
+from sklearn.inspection import permutation_importance
 
 #imports for random forest
 from sklearn.ensemble import RandomForestClassifier
@@ -73,6 +74,24 @@ def visualize_feature_importance(x_dimension, y_dimension, ml_model, title, colo
     plt.xlabel('Relative Importance')
     plt.show()
 
+def visualize_non_linear_based_importance(x_dimension, y_dimension, X_test, y_test, ml_model, title, color, variable_list, number_of_features, n_repeats):
+    result = permutation_importance(ml_model, X_test, y_test, n_repeats=n_repeats)
+    importances = result.importances_mean
+    indices = np.argsort(importances)[::-1][:number_of_features]
+    plt.figure(figsize=(x_dimension, y_dimension))
+    plt.title(title)
+    #add 'other' importances to the front
+    all_importances = importances[indices][::-1].tolist()
+    all_associated_variables = [variable_list[i]for i in indices[::-1]]
+    if len(variable_list) > number_of_features: #if not enough features and 'other'
+        all_importances.insert(0, 1 - np.sum(all_importances))
+        all_associated_variables.insert(0, 'Other')
+    #plot feature importance
+    plt.barh(range(len(all_importances)), all_importances, color = color, align='center')
+    plt.yticks(range(len(all_associated_variables)), all_associated_variables)
+    plt.xlabel('Relative Importance')
+    plt.show()
+
 
 def estimate_ml_metrics(ml_model, model_name, actual_values, test_values, runs):
     timings = []
@@ -116,7 +135,8 @@ def visualize_precision_recall_curve(x_dimension, y_dimension, ml_model_names, m
     precisions = []
     recalls = []
     for model, X_test, y_test in zip(ml_models, X_tests, y_tests):
-        y_scores = model.predict_proba(X_test)[:, 1]
+        pos_index = list(model.classes_).index(pos_label)
+        y_scores = model.predict_proba(X_test)[:, pos_index]
         precision, recall, thresholds = precision_recall_curve(y_test, y_scores, pos_label = pos_label)
         precisions.append(precision)
         recalls.append(recall)
