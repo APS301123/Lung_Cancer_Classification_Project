@@ -47,6 +47,7 @@ def create_ROC_curve(x_dimension, y_dimension, ml_model_names, ml_models, X_test
     plt.xlabel('False Positive Rate')
     plt.ylabel('True Positive Rate')
     plt.legend(loc="lower right")
+    plt.title(title)
     plt.show()
 
 def visualize_confusion_matrix(ml_model, actual_values, test_values, labels, title):
