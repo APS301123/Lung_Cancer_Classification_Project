@@ -2,7 +2,17 @@
 Lung Cancer accounts for about 1 in 5 cancer deaths. Many papers discuss the need to non-invasively identity Lung Cancer. One such paper, *Noninvasive Urinary Metabolomic Profiling Identifies Diagnostic and Prognostic Markers in Lung Cancer* applies a Random Forest Classifier(n_estimators = 5000) to an untargeted metabolomic dataset (Metabolights MTBLS28) the researchers created from human urine samples(1005 samples and 3166 metabolites -> 1807 ESI+, 1359 ESI-). This form of identification had an accuracy of 0.781 in the original paper. This project attempts to try and achieve higher accuracy by using Gradient Boosting and Ensemble Models.
 
 ---
+# Project Folders + Main Files
+**Dataset: 'MTBLS28_187567'<br>**
+  * m_MTBLS28_POS_v2_maf.tsv -> ESI+ untargeted metabolomic dataset
+  * m_MTBLS28_NEG_v2_maf.tsv -> ESI- untargeted metabolomic dataset
+  * s_MTBLS28.txt -> additional variables + lung cancer status dataset
 
+**Project Work: 'Code'<br>**
+  * notebook_lung_cancer.ipynb -> juypter notebook
+  * ml_analysis_custom.py -> custom functions for model analysis
+
+---
 # Table of Contents
 
 **Section 1: Setup<br>**
