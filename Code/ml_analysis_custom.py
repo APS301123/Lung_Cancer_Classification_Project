@@ -20,11 +20,11 @@ from sklearn.ensemble import RandomForestClassifier
 
 #creates roc curve
 
-def create_ROC_curve(x_dimension, y_dimension, ml_model_names, ml_models, X_tests, y_tests, title, pos_label):
+def create_ROC_curve(x_dimension, y_dimension, ml_model_names, ml_models, X_tests, y_tests, title, pos_labels):
     false_positive_rates = [] 
     true_positive_rates = []
     roc_auc_scores = []
-    for model, X_test, y_test in zip(ml_models, X_tests, y_tests):
+    for model, X_test, y_test, pos_label in zip(ml_models, X_tests, y_tests, pos_labels):
         #calculate RF model roc auc
         pos_index = list(model.classes_).index(pos_label)
         y_prob = model.predict_proba(X_test)[:, pos_index]
@@ -116,20 +116,18 @@ def estimate_ml_metrics(ml_model, model_name, actual_values, test_values, runs):
     return all_metrics
 
 def create_comparison_frame(all_metrics_list):
-    comparisons = np.zeros((len(all_metrics_list), 5)) # 0 - name,  1 - accuracy, 2 - precision, 3 - recall, 4 - f1, 5 - latency
-
-    #add all metrics from all models
+    rows = []
     for metrics in all_metrics_list:
-        comparisons[0, :].append(metrics['Model'])
-        comparisons[1, :].append(metrics['Accuracy'])
-        comparisons[2, :].append(metrics['Precision'])
-        comparisons[3, :].append(metrics['Recall'])
-        comparisons[4, :].append(metrics['F1'])
-        comparisons[5, :].append(metrics['Latency'])
-
-    #store metrics in comparison frame comparisons[0, :]
-    comparison_frame = pd.DataFrame({'Model': comparisons[0, :], 'accuracy': comparisons[1, :], 'Precision': comparisons[2, :], 'Recall': comparisons[3, :], 'F1' : comparisons[4, :], 'Latency': comparisons[5, :]}) 
-    return comparison_frame
+        rows.append({
+            'Model': metrics['Model'],
+            'Accuracy': metrics['Accuracy'],
+            'Precision': metrics['Precision'],
+            'Recall': metrics['Recall'],
+            'F1': metrics['F1'],
+            'Latency': metrics['Latency'],
+        })
+    df = pd.DataFrame(rows)
+    return df.sort_values(by='Accuracy', ascending=False).reset_index(drop=True)
 
 
 def visualize_precision_recall_curve(x_dimension, y_dimension, ml_model_names, ml_models, X_tests, y_tests, title, pos_label):
@@ -155,15 +153,15 @@ def visualize_precision_recall_curve(x_dimension, y_dimension, ml_model_names, m
     plt.legend(loc="lower right")
     plt.show()
 
-def visualize_learning_curve_classification(x_dimension, y_dimension, ml_model_names, ml_models, dataset_features, dataset_targets, train_sizes, cross_validation_splits):
+def visualize_learning_curve_classification(x_dimension, y_dimension, ml_model_names, ml_models, dataset_features, dataset_targets, train_sizes, cross_validation_splits, title):
     #set figure size
     plt.figure(figsize=(x_dimension, y_dimension))
 
-    for model, name in zip(ml_models, ml_model_names):
+    for model, name, dataset_feature, dataset_target in zip(ml_models, ml_model_names, dataset_features, dataset_targets):
         train_sizes, train_scores, test_scores = learning_curve(
             estimator = model,
-            X = dataset_features,
-            y = dataset_targets,
+            X = dataset_feature,
+            y = dataset_target,
             train_sizes = train_sizes,
             cv = cross_validation_splits,
             scoring='accuracy'
@@ -173,6 +171,6 @@ def visualize_learning_curve_classification(x_dimension, y_dimension, ml_model_n
 
     plt.xlabel('Training Set Size')
     plt.ylabel('Score')
-    plt.title('Learning Curve')
+    plt.title(title)
     plt.legend()
     plt.show()
